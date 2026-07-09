@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="vi">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Compare Text – So sánh văn bản</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+			rel="stylesheet" />
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<div class="app">
+			<!-- Header -->
+			<header class="header">
+				<h1>⟨ Compare Text ⟩</h1>
+			</header>
+
+			<!-- Editors -->
+			<div class="editors">
+				<div class="editor-panel">
+					<div class="editor-label">
+						<span class="dot original"></span>
+						Văn bản gốc
+						<span class="char-count" id="countOriginal">0 ký tự</span>
+					</div>
+					<textarea
+						id="original"
+						placeholder="Dán hoặc nhập văn bản gốc vào đây..."
+						spellcheck="false"></textarea>
+				</div>
+				<div class="editor-panel">
+					<div class="editor-label">
+						<span class="dot modified"></span>
+						Văn bản chỉnh sửa
+						<span class="char-count" id="countModified">0 ký tự</span>
+					</div>
+					<textarea
+						id="modified"
+						placeholder="Dán hoặc nhập văn bản đã chỉnh sửa vào đây..."
+						spellcheck="false"></textarea>
+				</div>
+			</div>
+
+			<!-- Actions -->
+			<div class="actions">
+				<button class="btn btn-primary" id="btnCompare" onclick="runCompare()">
+					<svg viewBox="0 0 16 16">
+						<path
+							d="M9.573.677A.25.25 0 0 1 10 .854v4.396a.25.25 0 0 1-.427.177L8.22 4.074l-2.47 2.47a.75.75 0 0 1-1.06-1.06l2.47-2.47-1.353-1.353A.25.25 0 0 1 5.984.677h3.589ZM6.427 15.323A.25.25 0 0 1 6 15.146v-4.396a.25.25 0 0 1 .427-.177l1.353 1.353 2.47-2.47a.75.75 0 0 1 1.06 1.06l-2.47 2.47 1.353 1.353a.25.25 0 0 1-.177.427H6.427Z" />
+					</svg>
+					So sánh (ctrl + enter)
+				</button>
+				<button class="btn btn-secondary" onclick="swapTexts()">
+					<svg viewBox="0 0 16 16">
+						<path
+							d="M5.22 14.78a.75.75 0 0 0 1.06-1.06L4.56 12h8.69a.75.75 0 0 0 0-1.5H4.56l1.72-1.72a.75.75 0 0 0-1.06-1.06l-3 3a.75.75 0 0 0 0 1.06l3 3ZM10.78 1.22a.75.75 0 0 0-1.06 1.06L11.44 4H2.75a.75.75 0 0 0 0 1.5h8.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3a.75.75 0 0 0 0-1.06l-3-3Z" />
+					</svg>
+					Tráo
+				</button>
+				<button class="btn btn-secondary" onclick="clearAll()">
+					<svg viewBox="0 0 16 16">
+						<path
+							d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.75.75 0 1 1 1.06 1.06L9.06 8l3.22 3.22a.75.75 0 1 1-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 0 1-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z" />
+					</svg>
+					Xoá
+				</button>
+			</div>
+
+			<!-- Stats -->
+			<div class="stats-bar" id="statsBar">
+				<div class="stat">
+					<span class="badge add" id="statAdd">0</span> dòng thêm
+				</div>
+				<div class="stat">
+					<span class="badge del" id="statDel">0</span> dòng xoá
+				</div>
+				<div class="stat">
+					<span class="badge neutral" id="statUnchanged">0</span> dòng giữ
+					nguyên
+				</div>
+			</div>
+
+			<!-- Diff output -->
+			<div class="diff-container" id="diffContainer">
+				<div class="diff-header">
+					<svg class="icon" viewBox="0 0 16 16">
+						<path
+							d="M8.75 1.75V5H12a.75.75 0 0 1 0 1.5H8.75v3.25a.75.75 0 0 1-1.5 0V6.5H4a.75.75 0 0 1 0-1.5h3.25V1.75a.75.75 0 0 1 1.5 0ZM4 13h8a.75.75 0 0 1 0 1.5H4a.75.75 0 0 1 0-1.5Z" />
+					</svg>
+					Kết quả so sánh
+					<div class="diff-mode-toggle">
+						<button
+							class="diff-mode-btn active"
+							data-mode="unified"
+							onclick="switchMode('unified')">
+							Unified
+						</button>
+						<button
+							class="diff-mode-btn"
+							data-mode="split"
+							onclick="switchMode('split')">
+							Side-by-side
+						</button>
+						<button
+							class="diff-mode-btn"
+							data-mode="inline"
+							onclick="switchMode('inline')">
+							Inline
+						</button>
+					</div>
+				</div>
+				<div class="diff-body" id="diffBody"></div>
+			</div>
+		</div>
+
+		<!-- jsdiff library from CDN -->
+		<script src="https://cdn.jsdelivr.net/npm/diff@7.0.0/dist/diff.min.js"></script>
+		<script src="script.js"></script>
+	</body>
+</html>
